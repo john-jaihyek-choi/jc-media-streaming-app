@@ -1,5 +1,4 @@
 .vscode/
-__pycache__/
 
 # exclude python virtual env
 venv

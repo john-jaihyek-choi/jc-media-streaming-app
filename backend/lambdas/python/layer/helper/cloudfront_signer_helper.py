@@ -1,25 +1,31 @@
-import datetime
-import os
-import validators
-import logging
+import os, sys
+
+if os.getenv("AWS_EXECUTION_ENV"):
+    print("ran")
+    sys.path.append("/opt/python")
+
+import datetime, validators, logging
+from layer.utils.logger import LoggerConfig
 from dotenv import load_dotenv
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding
 from botocore.signers import CloudFrontSigner
 from botocore.exceptions import ClientError
-from custom.exceptions import InvalidSignedUrlError
+from layer.custom.exceptions import InvalidSignedUrlError
 from typing import Optional
 
-# Set up logger
-logger = logging.getLogger(__name__)
-
+# Load env variable
 load_dotenv()
+
+# Setup logger config
+LoggerConfig.config()
+logger = logging.getLogger(__name__)
 
 
 class CloudFrontSignerHelper:
     def __init__(self) -> None:
-        self.pem_key: bytes | None = None
+        self.pem_key: Optional[bytes] = None
 
     # used exclusively for CloudFrontSignerHelper
     def _rsa_signer(self, message):
@@ -59,6 +65,8 @@ class CloudFrontSignerHelper:
             if not validators.url(signed_url):
                 raise InvalidSignedUrlError()
 
+            logger.info("signed url generation successful")
+
             return signed_url
 
         except ClientError as e:
@@ -66,3 +74,7 @@ class CloudFrontSignerHelper:
             raise RuntimeError(
                 f"Failed to retrieve item: {e.response['Error']['Message']}"
             ) from e
+
+
+cf_signer = CloudFrontSignerHelper()
+cf_signer.generate_signed_url()

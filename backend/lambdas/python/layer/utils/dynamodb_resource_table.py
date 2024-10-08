@@ -15,7 +15,7 @@ from mypy_boto3_dynamodb.type_defs import (
     ScanInputRequestTypeDef,
     ScanOutputTableTypeDef,
 )
-from typing import Optional
+from typing import Optional, Dict, List
 
 # load env variable
 load_dotenv()
@@ -57,9 +57,7 @@ class DynamoDBResourceTable:
             logger.error(f"An unexpected error occurred: {str(e)}")
             raise RuntimeError("An unexpected AWS service error occurred.")
 
-    def scan(
-        self, **kwargs: ScanInputRequestTypeDef
-    ) -> Optional[ScanOutputTableTypeDef]:
+    def scan(self, **kwargs: ScanInputRequestTypeDef) -> Optional[dict]:
         """
         Defines the input parameters for a DynamoDB Scan operation.
 
@@ -103,7 +101,7 @@ class DynamoDBResourceTable:
         try:
             response: ScanOutputTableTypeDef = self.table.scan(**kwargs)
 
-            return json.dumps(response, indent=4)
+            return {"Items": response["Items"], "Count": response["Count"]}
 
         except ClientError as e:
             logger.error(f"ClientError occurred: {e.response['Error']}")
@@ -151,7 +149,7 @@ class DynamoDBResourceTable:
         try:
             response: GetItemOutputTableTypeDef = self.table.get_item(**kwargs)
 
-            return json.dumps(response, indent=4)
+            return {"Item": response["Item"]}
 
         except ClientError as e:
             logger.error(f"ClientError occurred: {e.response['Error']}")

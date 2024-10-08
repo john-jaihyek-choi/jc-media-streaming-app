@@ -17,10 +17,6 @@ mypy-boto3-secretsmanager = "1.35.0"
 validators = "0.34.0"
 aws-lambda-typing = "2.20.0"
 
-
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
-
-[tool.poetry.scripts]
-utils = "layer.helper.module2"

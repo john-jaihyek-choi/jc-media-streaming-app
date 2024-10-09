@@ -4,16 +4,14 @@ if os.getenv("AWS_EXECUTION_ENV"):
     print("ran")
     sys.path.append("/opt/python")
 
-import boto3, json
+import boto3
 from layer.python.custom_utils.logger import logger_config
 from dotenv import load_dotenv
 from botocore.exceptions import ClientError
 from mypy_boto3_dynamodb.service_resource import Table, DynamoDBServiceResource
 from mypy_boto3_dynamodb.type_defs import (
-    GetItemOutputTableTypeDef,
     GetItemInputTableGetItemTypeDef,
     ScanInputRequestTypeDef,
-    ScanOutputTableTypeDef,
 )
 from typing import Optional
 

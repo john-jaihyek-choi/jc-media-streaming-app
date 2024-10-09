@@ -1,0 +1,80 @@
+import os, sys
+
+if os.getenv("AWS_EXECUTION_ENV"):
+    sys.path.append("/opt/python")
+
+import boto3, json, datetime
+from dotenv import load_dotenv
+from layer.python.custom_utils.logger import logger_config
+from mypy_boto3_secretsmanager.client import SecretsManagerClient
+from mypy_boto3_secretsmanager.type_defs import (
+    GetSecretValueRequestRequestTypeDef,
+    GetSecretValueResponseTypeDef,
+)
+from botocore.exceptions import ClientError
+from typing import Optional, Any
+
+# Load env variable
+load_dotenv()
+
+# Setup logger config
+logger = logger_config(__name__)
+
+
+class SecretsManager:
+    """
+    :param region: AWS region where the target secret is hosted. Defaults to 'us-east-2'.
+    """
+
+    def __init__(self, region: Optional[str] = os.getenv("DEFAULT_AWS_REGION")) -> None:
+        self.client: SecretsManagerClient = boto3.client(
+            "secretsmanager", region_name=region
+        )
+
+    # Custom serialization function
+    def _custom_serializer(self, obj: Any):
+        if isinstance(obj, datetime.datetime):
+            return obj.isoformat()
+        raise TypeError(f"Type {type(obj)} is not serializable")
+
+    def get_secret_value(
+        self,
+        **kwargs: GetSecretValueRequestRequestTypeDef,
+    ) -> Optional[bytes]:
+        """
+        Defines the input parameters for retrieving a secret value from AWS Secrets Manager.
+
+        Attributes:
+            SecretId (str):
+                The identifier for the secret from which to retrieve the value. This can be the secret name,
+                Amazon Resource Name (ARN), or the unique identifier of the secret. This parameter is required.
+            VersionId (Optional[str]):
+                The unique identifier of the version of the secret to retrieve. If not specified, AWS Secrets Manager
+                retrieves the version marked with the 'AWSCURRENT' label by default.
+            VersionStage (Optional[str]):
+                The staging label of the version of the secret to retrieve. By default, AWS Secrets Manager uses
+                'AWSCURRENT' if not provided.
+
+        """
+        secret_id = kwargs["SecretId"]
+
+        if not secret_id:
+            raise ValueError(
+                "The 'SecretId' parameter must be provided and cannot be empty."
+            )
+
+        try:
+            response: GetSecretValueResponseTypeDef = self.client.get_secret_value(
+                **kwargs
+            )
+
+            logger.info("secret string retrieval successful")
+
+            return json.dumps(response, default=self._custom_serializer, indent=4)
+
+        except ClientError as e:
+            logger.error(f"ClientError occurred: {e.response['Error']}")
+            raise RuntimeError("An AWS service client error occurred.")
+        except Exception as e:
+            logger.error(f"An unexpected error occurred: {str(e)}")
+            raise RuntimeError("An unexpected AWS service error occurred.")

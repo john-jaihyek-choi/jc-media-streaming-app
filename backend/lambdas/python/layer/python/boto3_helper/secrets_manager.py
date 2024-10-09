@@ -3,16 +3,15 @@ import os, sys
 if os.getenv("AWS_EXECUTION_ENV"):
     sys.path.append("/opt/python")
 
-import boto3, json, datetime
+import boto3
 from dotenv import load_dotenv
 from layer.python.custom_utils.logger import logger_config
 from mypy_boto3_secretsmanager.client import SecretsManagerClient
 from mypy_boto3_secretsmanager.type_defs import (
     GetSecretValueRequestRequestTypeDef,
-    GetSecretValueResponseTypeDef,
 )
 from botocore.exceptions import ClientError
-from typing import Optional, Any
+from typing import Optional
 
 # Load env variable
 load_dotenv()
@@ -31,16 +30,10 @@ class SecretsManager:
             "secretsmanager", region_name=region
         )
 
-    # Custom serialization function
-    def _custom_serializer(self, obj: Any):
-        if isinstance(obj, datetime.datetime):
-            return obj.isoformat()
-        raise TypeError(f"Type {type(obj)} is not serializable")
-
     def get_secret_value(
         self,
         **kwargs: GetSecretValueRequestRequestTypeDef,
-    ) -> Optional[bytes]:
+    ) -> Optional[dict]:
         """
         Defines the input parameters for retrieving a secret value from AWS Secrets Manager.
 
@@ -54,9 +47,8 @@ class SecretsManager:
             VersionStage (Optional[str]):
                 The staging label of the version of the secret to retrieve. By default, AWS Secrets Manager uses
                 'AWSCURRENT' if not provided.
-
         """
-        secret_id = kwargs["SecretId"]
+        secret_id = kwargs.get("SecretId")
 
         if not secret_id:
             raise ValueError(
@@ -64,13 +56,11 @@ class SecretsManager:
             )
 
         try:
-            response: GetSecretValueResponseTypeDef = self.client.get_secret_value(
-                **kwargs
-            )
+            response: dict = self.client.get_secret_value(**kwargs)
 
             logger.info("secret string retrieval successful")
 
-            return json.dumps(response, default=self._custom_serializer, indent=4)
+            return {"SecretString": response.get("SecretString")}
 
         except ClientError as e:
             logger.error(f"ClientError occurred: {e.response['Error']}")

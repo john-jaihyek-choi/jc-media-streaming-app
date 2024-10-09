@@ -54,7 +54,7 @@ export class LambdaStack extends NestedStack {
 
     cdk.Tags.of(getMedias).add(mainStack.stackName, "get_medias");
 
-    new cdk.CfnOutput(this, "FunctionArn", {
+    new cdk.CfnOutput(this, "getMediasARN", {
       value: getMedias.functionArn,
     });
 
@@ -75,7 +75,7 @@ export class LambdaStack extends NestedStack {
 
     cdk.Tags.of(getMediaUrl).add(mainStack.stackName, "get_media_url");
 
-    new cdk.CfnOutput(this, "FunctionArn", {
+    new cdk.CfnOutput(this, "getMediaUrlARN", {
       value: getMediaUrl.functionArn,
     });
   }

@@ -33,7 +33,7 @@ class SecretsManager:
     def get_secret_value(
         self,
         **kwargs: GetSecretValueRequestRequestTypeDef,
-    ) -> Optional[dict]:
+    ) -> Optional[bytes]:
         """
         Defines the input parameters for retrieving a secret value from AWS Secrets Manager.
 
@@ -58,9 +58,15 @@ class SecretsManager:
         try:
             response: dict = self.client.get_secret_value(**kwargs)
 
+            secret = response.get("SecretString")
+
             logger.info("secret string retrieval successful")
 
-            return {"SecretString": response.get("SecretString")}
+            return {
+                "SecretString": (
+                    secret.encode("utf-8") if isinstance(secret, str) else secret
+                )
+            }
 
         except ClientError as e:
             logger.error(f"ClientError occurred: {e.response['Error']}")

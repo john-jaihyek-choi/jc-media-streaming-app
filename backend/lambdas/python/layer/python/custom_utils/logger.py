@@ -1,7 +1,4 @@
-import os, sys
-
-if os.getenv("AWS_EXECUTION_ENV"):
-    sys.path.append("/opt/python")
+import os
 import logging
 from logging import Logger
 from dotenv import load_dotenv

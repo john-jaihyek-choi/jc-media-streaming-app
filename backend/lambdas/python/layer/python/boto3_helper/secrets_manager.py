@@ -1,8 +1,4 @@
 import os, sys
-
-if os.getenv("AWS_EXECUTION_ENV"):
-    sys.path.append("/opt/python")
-
 import boto3
 from dotenv import load_dotenv
 from layer.python.custom_utils.logger import logger_config

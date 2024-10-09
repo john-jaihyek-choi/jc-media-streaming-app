@@ -1,8 +1,4 @@
 import os, sys
-
-if os.getenv("AWS_EXECUTION_ENV"):
-    sys.path.append("/opt/python")
-
 import datetime, validators
 from layer.python.custom_utils.logger import logger_config
 from layer.python.custom_utils.exceptions import InvalidSignedUrlError

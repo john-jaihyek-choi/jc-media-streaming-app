@@ -15,7 +15,7 @@ from mypy_boto3_dynamodb.type_defs import (
     ScanInputRequestTypeDef,
     ScanOutputTableTypeDef,
 )
-from typing import Optional, Dict, List
+from typing import Optional
 
 # load env variable
 load_dotenv()
@@ -99,9 +99,12 @@ class DynamoDBResourceTable:
         """
 
         try:
-            response: ScanOutputTableTypeDef = self.table.scan(**kwargs)
+            response: dict = self.table.scan(**kwargs)
 
-            return {"Items": response["Items"], "Count": response["Count"]}
+            return {
+                "Items": response.get("Items", []),
+                "Count": response.get("Count", 0),
+            }
 
         except ClientError as e:
             logger.error(f"ClientError occurred: {e.response['Error']}")
@@ -115,7 +118,7 @@ class DynamoDBResourceTable:
     def get_item(
         self,
         **kwargs: GetItemInputTableGetItemTypeDef,
-    ) -> Optional[GetItemOutputTableTypeDef]:
+    ) -> Optional[dict]:
         """
         Defines the input parameters for a DynamoDB GetItem operation.
 
@@ -147,9 +150,11 @@ class DynamoDBResourceTable:
             )
 
         try:
-            response: GetItemOutputTableTypeDef = self.table.get_item(**kwargs)
+            response: dict = self.table.get_item(**kwargs)
 
-            return {"Item": response["Item"]}
+            logger.info(response)
+
+            return {"Item": response.get("Item", {})}
 
         except ClientError as e:
             logger.error(f"ClientError occurred: {e.response['Error']}")

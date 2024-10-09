@@ -5,7 +5,7 @@ if os.getenv("AWS_EXECUTION_ENV"):
     sys.path.append("/opt/python")
 
 import datetime, validators
-from layer.python.custom_utils.logger import logger_config
+from custom_utils.logger import logger_config
 from dotenv import load_dotenv
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization

@@ -1,6 +1,6 @@
 import os, sys
 import boto3
-from layer.python.custom_utils.logger import logger_config
+from utils.logger import logger_config
 from dotenv import load_dotenv
 from botocore.exceptions import ClientError
 from mypy_boto3_dynamodb.service_resource import Table, DynamoDBServiceResource

@@ -1,7 +1,7 @@
 import os, sys
 import boto3
 from dotenv import load_dotenv
-from layer.python.custom_utils.logger import logger_config
+from utils.logger import logger_config
 from mypy_boto3_secretsmanager.client import SecretsManagerClient
 from mypy_boto3_secretsmanager.type_defs import (
     GetSecretValueRequestRequestTypeDef,

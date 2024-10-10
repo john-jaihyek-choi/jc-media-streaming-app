@@ -3,7 +3,7 @@
 *.d.ts
 node_modules
 __pycache__/
-lambdas/python/opt/python/lib/**/site-packages/
+lambdas/python/layer/python/lib/**/site-packages/
 layer.zip
 
 # CDK asset staging directory

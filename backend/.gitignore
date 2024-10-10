@@ -3,15 +3,9 @@
 *.d.ts
 node_modules
 __pycache__/
-lambdas/python/layer/python/lib/**/site-packages/
+lambdas/python/opt/python/lib/**/site-packages/
 layer.zip
 
 # CDK asset staging directory
 .cdk.staging
 cdk.out
-
-# ignore .env
-.env
-
-# ignore python virtual env
-.venv

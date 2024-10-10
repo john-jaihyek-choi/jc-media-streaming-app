@@ -2,7 +2,6 @@ import os, sys
 from boto3 import resource
 from layer.python.utils.logger import logger_config
 from dotenv import load_dotenv
-from botocore.exceptions import ClientError
 from mypy_boto3_dynamodb.service_resource import Table, DynamoDBServiceResource
 from mypy_boto3_dynamodb.type_defs import (
     GetItemInputTableGetItemTypeDef,
@@ -82,14 +81,9 @@ class DynamoDBResourceTable:
                 "Count": response.get("Count", 0),
             }
 
-        except ClientError as e:
-            logger.error(f"ClientError occurred: {e.response['Error']}")
-            raise RuntimeError("An AWS service client error occurred.")
-
         except Exception as e:
-            # Catch-all for any other unexpected exceptions
-            logger.error(f"An unexpected error occurred: {str(e)}")
-            raise RuntimeError("An unexpected AWS service error occurred.")
+            logger.error(f"{e}")
+            raise ValueError(e)
 
     def get_item(
         self,

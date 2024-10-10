@@ -25,7 +25,7 @@ export class LambdaStack extends NestedStack {
     // Lambda Layers
     const pythonLayer = new lambda.LayerVersion(this, "PythonLayer", {
       code: lambda.Code.fromAsset(
-        path.join(__dirname, "../lambdas/layer/layer_package.zip")
+        path.join(__dirname, "../lambdas/python/layer/layer_package.zip")
       ),
       compatibleRuntimes: [python3_12_runtime],
       description: "Lambda Layer for MyFunction",

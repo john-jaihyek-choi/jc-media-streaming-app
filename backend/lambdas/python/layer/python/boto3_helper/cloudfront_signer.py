@@ -1,7 +1,7 @@
 import os, sys
 import datetime, validators
-from utils.logger import logger_config
-from utils.exceptions import InvalidSignedUrlError
+from layer.python.utils.logger import logger_config
+from layer.python.utils.exceptions import InvalidSignedUrlError
 from dotenv import load_dotenv
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes, serialization

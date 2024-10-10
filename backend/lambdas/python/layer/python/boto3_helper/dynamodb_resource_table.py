@@ -1,6 +1,6 @@
 import os, sys
-import boto3
-from utils.logger import logger_config
+from boto3 import resource
+from layer.python.utils.logger import logger_config
 from dotenv import load_dotenv
 from botocore.exceptions import ClientError
 from mypy_boto3_dynamodb.service_resource import Table, DynamoDBServiceResource
@@ -27,28 +27,11 @@ class DynamoDBResourceTable:
     def __init__(
         self, table_name: str, region: Optional[str] = os.getenv("DEFAULT_AWS_REGION")
     ) -> None:
-        if not table_name:
-            logger.error(
-                f"Invalid table_name value is provided. Received table_name={table_name}"
-            )
-            raise ValueError("Invalid argument value is provided.")
-
-        try:
-            ddb_service_resource: DynamoDBServiceResource = boto3.resource(
-                "dynamodb", region_name=region
-            )
-            self.table: Table = ddb_service_resource.Table(table_name)
-
-            logger.debug(
-                f"Successfully connected to DynamoDB table {table_name} ({region})"
-            )
-        except ClientError as e:
-            logger.error(f"ClientError occurred: {e.response['Error']}")
-            raise RuntimeError("An AWS service client error occurred.")
-        except Exception as e:
-            # Catch-all for any other unexpected exceptions
-            logger.error(f"An unexpected error occurred: {str(e)}")
-            raise RuntimeError("An unexpected AWS service error occurred.")
+        self.resource: DynamoDBServiceResource = resource(
+            "dynamodb", region_name=region
+        )
+        self.table_name = table_name
+        self.table: Table = self.resource.Table(self.table_name)
 
     def scan(self, **kwargs: ScanInputRequestTypeDef) -> Optional[dict]:
         """
@@ -136,8 +119,9 @@ class DynamoDBResourceTable:
                 A dictionary of substitution tokens for attribute names in an expression, used to avoid reserved
                 words or special characters in DynamoDB.
         """
+        key = kwargs.get("Key")
 
-        if "Key" not in kwargs:
+        if not key:
             raise ValueError(
                 "The 'key' parameter must be provided and cannot be empty."
             )
@@ -145,15 +129,10 @@ class DynamoDBResourceTable:
         try:
             response: dict = self.table.get_item(**kwargs)
 
-            logger.info(response)
+            logger.debug(response)
 
             return {"Item": response.get("Item", {})}
 
-        except ClientError as e:
-            logger.error(f"ClientError occurred: {e.response['Error']}")
-            raise RuntimeError("An AWS service client error occurred.")
-
         except Exception as e:
-            # Catch-all for any other unexpected exceptions
-            logger.error(f"An unexpected error occurred: {str(e)}")
-            raise RuntimeError("An unexpected AWS service error occurred.")
+            logger.error(f"{e} - {key}")
+            raise ValueError(e)

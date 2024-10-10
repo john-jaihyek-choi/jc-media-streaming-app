@@ -50,6 +50,7 @@ export class LambdaStack extends NestedStack {
         LOG_LEVEL: process.env.LOG_LEVEL || "",
       },
       layers: [pythonLayer],
+      timeout: cdk.Duration.seconds(15),
     });
 
     cdk.Tags.of(getMedias).add(mainStack.stackName, "get_medias");
@@ -71,6 +72,7 @@ export class LambdaStack extends NestedStack {
         LOG_LEVEL: process.env.LOG_LEVEL || "",
       },
       layers: [pythonLayer],
+      timeout: cdk.Duration.seconds(15),
     });
 
     cdk.Tags.of(getMediaUrl).add(mainStack.stackName, "get_media_url");

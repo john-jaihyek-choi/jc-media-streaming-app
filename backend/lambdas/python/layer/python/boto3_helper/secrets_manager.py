@@ -57,6 +57,7 @@ class SecretsManager:
             secret = response.get("SecretString")
 
             logger.info("secret string retrieval successful")
+            logger.debug(secret)
 
             return {
                 "SecretString": (
@@ -64,9 +65,6 @@ class SecretsManager:
                 )
             }
 
-        except ClientError as e:
-            logger.error(f"ClientError occurred: {e.response['Error']}")
-            raise RuntimeError("An AWS service client error occurred.")
         except Exception as e:
-            logger.error(f"An unexpected error occurred: {str(e)}")
-            raise RuntimeError("An unexpected AWS service error occurred.")
+            logger.error(f'{e}  (SecretId="{secret_id}")')
+            raise ValueError(e)

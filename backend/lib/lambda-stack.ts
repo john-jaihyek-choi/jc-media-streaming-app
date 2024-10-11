@@ -70,6 +70,7 @@ export class LambdaStack extends NestedStack {
         CF_PUBLIC_KEY_ID: process.env.CF_PUBLIC_KEY_ID || "",
         CF_DEFAULT_URL_EXP: process.env.CF_DEFAULT_URL_EXP || "",
         LOG_LEVEL: process.env.LOG_LEVEL || "",
+        CLOUDFRONT_DOMAIN: process.env.CLOUDFRONT_DOMAIN || "",
       },
       layers: [pythonLayer],
       timeout: cdk.Duration.seconds(15),

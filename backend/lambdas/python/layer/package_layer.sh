@@ -5,10 +5,10 @@ echo "Script is located at: $SCRIPT_DIR"
 echo "PROJECT ROOT is located at: $PROJECT_ROOT_DIR"
 
 read -p "Do you confirm? (y/n): " choice
-case "$choice" in 
-  y|Y ) echo "Process starting...";;
-  n|N ) echo "Please verify package_layer.sh for correct path to root and the script"; exit 1;;
-  * ) echo "Process starting...";;
+case "$choice" in
+  [yY]) echo "Process starting...";;
+  [nN]) echo "Please verify package_layer.sh for correct path to root and the script"; exit 1;;
+  *) echo "Invalid choice. Process starting...";;
 esac
 
 # Step 1: Generate requirements.txt for boto3_helper and utils
@@ -26,13 +26,11 @@ echo "Dependency installation completed!"
 
 # Step 4: Zip content for Lambda Layer
 echo "Zipping the packages for Lambda Layer..."
-# zip -r layer_package.zip python/
-(cd "${SCRIPT_DIR}" && zip -r "layer_package.zip" python/)
+# find python/ -type d -name "__pycache__" -exec rm -rf {} + && 
+(cd "${SCRIPT_DIR}" && zip -r -o "layer_package.zip" python/ -x "__pycache__")
 
 # Step 5 Cleaning up temporary directory
 echo "Cleaning up temporary directories..."
 rm -r "${SCRIPT_DIR}/python/"
-# rm utils/requirements.txt
-# rm boto3_helper/requirements.txt
 
 echo "layer.zip creation successful!"

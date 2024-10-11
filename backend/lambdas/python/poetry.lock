@@ -780,13 +780,13 @@ files = [
 
 [[package]]
 name = "mypy-boto3"
-version = "1.35.37"
-description = "Type annotations for boto3 1.35.37 master module generated with mypy-boto3-builder 8.1.2"
+version = "1.35.38"
+description = "Type annotations for boto3 1.35.38 master module generated with mypy-boto3-builder 8.1.2"
 optional = false
 python-versions = ">=3.8"
 files = [
-    {file = "mypy_boto3-1.35.37-py3-none-any.whl", hash = "sha256:2ef6f9b80fd03c1deba6c759559359eea4905d838fb13b951cd1fb853c0c7a4e"},
-    {file = "mypy_boto3-1.35.37.tar.gz", hash = "sha256:e4088b56487dbb3ea752bd005315a1444020d430e8ba1a499a105e910d6f856c"},
+    {file = "mypy_boto3-1.35.38-py3-none-any.whl", hash = "sha256:b75332fefe26df91e64fd1b13cbbdeb6edd776f610132436f9d8c4f1b2812fe9"},
+    {file = "mypy_boto3-1.35.38.tar.gz", hash = "sha256:116a1105c5799901fb6ef276bfd7a6d2f9dec5b63f9f8df20a74d117a27f89c5"},
 ]
 
 [package.dependencies]

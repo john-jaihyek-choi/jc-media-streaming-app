@@ -41,7 +41,7 @@ class CloudFrontSigner:
     def generate_presigned_url(
         self,
         url: str,
-        expiration_in_seconds: int = os.getenv("CF_DEFAULT_URL_EXP"),
+        expiration_in_seconds: int = os.getenv("CF_DEFAULT_URL_EXP", 3600),
         policy: Optional[str] = None,
     ) -> str:
         if not url:

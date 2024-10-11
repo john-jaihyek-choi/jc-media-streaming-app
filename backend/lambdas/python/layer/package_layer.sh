@@ -21,12 +21,12 @@ rsync -av --exclude="package_layer.sh" --exclude="*.zip" --exclude="${SCRIPT_DIR
 
 # Step 3: Install dependencies from the generated requirements.txt files
 echo "Installing dependencies from requirements.txt files into python/lib/python3.12/site-packages/..."
-pip install -r "${PROJECT_ROOT_DIR}/requirements.txt" -t "${SCRIPT_DIR}/python/lib/python3.12/site-packages/"
+pip install --platform manylinux2014_x86_64 --target=package --implementation cp --python-version 3.12 --only-binary=:all: --upgrade -r "${PROJECT_ROOT_DIR}/requirements.txt" -t "${SCRIPT_DIR}/python/lib/python3.12/site-packages/"
 echo "Dependency installation completed!"
 
 # Step 4: Zip content for Lambda Layer
 echo "Zipping the packages for Lambda Layer..."
-# find python/ -type d -name "__pycache__" -exec rm -rf {} + && 
+# find ./ -type d -name "__pycache__" -exec rm -rf {} + &&
 (cd "${SCRIPT_DIR}" && zip -r -o "layer_package.zip" python/ -x "__pycache__")
 
 # Step 5 Cleaning up temporary directory

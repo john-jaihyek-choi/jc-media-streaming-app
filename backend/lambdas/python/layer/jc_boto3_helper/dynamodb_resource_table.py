@@ -125,7 +125,7 @@ class DynamoDBResourceTable:
 
             logger.debug(response)
 
-            return {"Item": response.get("Item", {})}
+            return {"Item": response.get("Item")}
 
         except Exception as e:
             logger.error(f"{e} - {key}")

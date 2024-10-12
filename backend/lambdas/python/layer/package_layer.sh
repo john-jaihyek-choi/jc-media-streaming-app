@@ -28,8 +28,8 @@ echo "Dependency installation completed!"
 
 # Step 4: Zip content for Lambda Layer
 echo "Zipping the packages for Lambda Layer..."
-find ./ -type d -name "__pycache__" -exec rm -rf {} + &&
-(cd "${SCRIPT_DIR}" && zip -r -o "layer_package.zip" python/)
+find ./ -type d -name "__pycache__" -exec rm -rf {} + 
+(cd "${SCRIPT_DIR}" && rm -rf layer_package.zip && zip -r "layer_package.zip" python/)
 
 # Step 5 Cleaning up temporary directory
 echo "Cleaning up temporary directories..."

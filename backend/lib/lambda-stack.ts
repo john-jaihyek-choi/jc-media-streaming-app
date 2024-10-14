@@ -2,6 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { NestedStack, NestedStackProps } from "aws-cdk-lib";
 import * as lambda from "aws-cdk-lib/aws-lambda";
+import * as iam from "aws-cdk-lib/aws-iam";
 import * as path from "path";
 import * as dotenv from "dotenv";
 dotenv.config();
@@ -18,9 +19,28 @@ const python3_12_runtime = new lambda.Runtime(
 export class LambdaStack extends NestedStack {
   constructor(scope: Construct, id: string, props: LambdaStackProps) {
     super(scope, id, props);
-
     // Access to the MainStack
     const mainStack = cdk.Stack.of(this);
+
+    // getMediasLambdaRole Execution Roles:
+    const getMediasLambdaRole = new iam.Role(this, "getMediasLambdaRole", {
+      assumedBy: new iam.ServicePrincipal("lambda.amazonaws.com"),
+    });
+    // AWS managed basic lambda execution role
+    getMediasLambdaRole.addManagedPolicy(
+      iam.ManagedPolicy.fromAwsManagedPolicyName(
+        "service-role/AWSLambdaBasicExecutionRole"
+      )
+    );
+    // Custom inline policy for specific needs
+    getMediasLambdaRole.addToPolicy(
+      new iam.PolicyStatement({
+        actions: ["s3:Scan", "s3:GetItem"],
+        resources: [
+          `arn:aws:dynamodb:${process.env.DEFAULT_AWS_REGION}:${this.account}:table/${process.env.METADATA_TABLE_NAME}`,
+        ],
+      })
+    );
 
     // Lambda Layers
     const pythonLayer = new lambda.LayerVersion(this, "PythonLayer", {

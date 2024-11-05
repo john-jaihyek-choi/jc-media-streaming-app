@@ -42,7 +42,7 @@ class CloudFrontSigner:
     def generate_presigned_url(
         self,
         url: str,
-        expiration_in_seconds: int = os.getenv("CF_DEFAULT_URL_EXP", 3600),
+        expiration_in_seconds: int | str = os.getenv("CF_DEFAULT_URL_EXP", 3600),
         policy: Optional[str] = None,
     ) -> str:
         if not url:
@@ -51,7 +51,7 @@ class CloudFrontSigner:
             raise TypeError(
                 "missing 1 required positional argument: 'expiration_in_seconds"
             )
-        elif not isinstance(expiration_in_seconds, str) and not isinstance(
+        elif not expiration_in_seconds.isdigit() and not isinstance(
             expiration_in_seconds, int
         ):
             raise TypeError(

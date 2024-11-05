@@ -1,5 +1,6 @@
 import os, sys
 import datetime, validators
+from datetime import datetime, timezone, timedelta
 from jc_custom_utilities.logger import logger_config
 from jc_custom_utilities.exceptions import InvalidSignedUrlError
 from dotenv import load_dotenv
@@ -58,12 +59,25 @@ class CloudFrontSigner:
             )
 
         try:
-            expiration_time = datetime.datetime.now() + datetime.timedelta(
+            # set expiration time between now and delta
+            expiration_time = datetime.now(timezone.utc) + timedelta(
                 seconds=int(expiration_in_seconds)
             )
 
+            logger.info(
+                f"url will expire after {expiration_time} ({expiration_in_seconds} seconds...)"
+            )
+
+            # builds custom policy to restrict presigned url access further
+            custom_policy = self.cloudfront_signer.build_policy(
+                url,
+                date_less_than=expiration_time,
+                date_greater_than=datetime.now(timezone.utc),
+            )
+
+            # generate presigned url
             signed_url: str = self.cloudfront_signer.generate_presigned_url(
-                url=url, date_less_than=expiration_time, policy=policy
+                url=url, policy=custom_policy
             )
 
             # Leaving it for potential error handling in the future
